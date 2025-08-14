@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CSS Type Animation(CSS打字动画)</title>
+    <style>
+      @layer reset, base, demo;
+
+      @layer demo {
+        @keyframes typing {
+          0% {
+            width: 0;
+          }
+        }
+        @keyframes blink {
+          50% {
+            border-color: transparent;
+          }
+        }
+
+        h1 {
+          border-right: 3px solid;
+          width: 39ch;
+          font-family: Courier, monospace;
+          white-space: nowrap;
+          overflow: hidden;
+          font-size: clamp(1.5rem, 3vw + 2rem, 2.5rem);
+          animation: typing 10s steps(39, end),
+            blink 0.4s step-end infinite alternate;
+        }
+      }
+
+      @layer reset {
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+      }
+
+      @layer base {
+        body {
+          width: 100vw;
+          min-height: 100vh;
+          font-family: 'Exo', 'Bungee Shade', cursive, Arial, sans-serif;
+          background-color: #000;
+          color: #fff;
+          display: grid;
+          place-content: center;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>CSS Text Animation: CSS Type Animation.</h1>
+  </body>
+</html>
