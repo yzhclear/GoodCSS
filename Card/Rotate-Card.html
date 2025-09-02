@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>单张图片3D卡片动画</title>
+    <style>
+      @layer reset, base, demo;
+
+      @layer demo {
+        .centered {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 3rem;
+          height: 100%;
+        }
+        .card {
+          position: relative;
+          height: 28rem;
+          width: 20rem;
+          aspect-ratio: 0.7142857143;
+          color: #ffffff;
+          perspective: 50rem;
+        }
+        .image {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(
+              to top,
+              rgba(0, 0, 0, 0.5),
+              transparent 40%
+            ),
+            var(--url);
+          background-size: cover;
+          background-position: center;
+          transform: rotateX(var(--rotateX)) rotateY(var(--rotateY))
+            translate3d(0, 0, 0rem);
+        }
+        .content {
+          position: absolute;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          inset: 0;
+          padding: 3.5rem;
+          transform: rotateX(var(--rotateX)) rotateY(var(--rotateY))
+            translate3d(0, 0, 2rem);
+          z-index: 1;
+        }
+        h2 {
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+          text-shadow: 0 0 2rem rgba(0, 0, 0, 0.5);
+        }
+        p {
+          font-weight: 300;
+          text-shadow: 0 0 2rem rgba(0, 0, 0, 0.5);
+        }
+      }
+
+      @layer reset {
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+      }
+
+      @layer base {
+        body {
+          width: 100vw;
+          min-height: 100vh;
+          font-family: 'Exo', 'Bungee Shade', cursive, Arial, sans-serif;
+          background-color: #9fb7d4;
+          color: #fff;
+          display: grid;
+          place-content: center;
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="centered">
+      <div class="card">
+        <div
+          class="image"
+          style="--url: url('https://i.ibb.co/PM4ghD4/full.png')"
+        ></div>
+        <div class="content">
+          <h2>悬停我！</h2>
+          <p>这是一个简单的3D卡片效果，使用单张图片。</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const angle = 20;
+
+      const lerp = (start, end, amount) => {
+        return (1 - amount) * start + amount * end;
+      };
+
+      const remap = (value, oldMax, newMax) => {
+        const newValue =
+          ((value + oldMax) * (newMax * 2)) / (oldMax * 2) - newMax;
+        return Math.min(Math.max(newValue, -newMax), newMax);
+      };
+
+      window.addEventListener('DOMContentLoaded', (event) => {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((e) => {
+          e.addEventListener('mousemove', (event) => {
+            const rect = e.getBoundingClientRect();
+            const centerX = (rect.left + rect.right) / 2;
+            const centerY = (rect.top + rect.bottom) / 2;
+            const posX = event.pageX - centerX;
+            const posY = event.pageY - centerY;
+            const x = remap(posX, rect.width / 2, angle);
+            const y = remap(posY, rect.height / 2, angle);
+            e.dataset.rotateX = x;
+            e.dataset.rotateY = -y;
+          });
+
+          e.addEventListener('mouseout', (event) => {
+            e.dataset.rotateX = 0;
+            e.dataset.rotateY = 0;
+          });
+        });
+
+        const update = () => {
+          cards.forEach((e) => {
+            let currentX = parseFloat(
+              e.style.getPropertyValue('--rotateY').slice(0, -1)
+            );
+            let currentY = parseFloat(
+              e.style.getPropertyValue('--rotateX').slice(0, -1)
+            );
+            if (isNaN(currentX)) currentX = 0;
+            if (isNaN(currentY)) currentY = 0;
+            const x = lerp(currentX, e.dataset.rotateX, 0.05);
+            const y = lerp(currentY, e.dataset.rotateY, 0.05);
+            e.style.setProperty('--rotateY', x + 'deg');
+            e.style.setProperty('--rotateX', y + 'deg');
+          });
+        };
+        setInterval(update, 1000 / 60);
+      });
+    </script>
+  </body>
+</html>
